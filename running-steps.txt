@@ -1,0 +1,125 @@
+npm uninstall -g angular-cli @angular/cli
+
+npm cache clean --force
+
+npm install -g @angular/cli@1.7.4
+
+
+
+create a docker File inside the application folder
+Open the docker file
+
+type inside the the docker file
+FROM node:latest as builder
+
+RUN mkdir -p /app
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install
+RUN npm run build --prod
+
+CMD ["npm","start"]
+
+open package.jsson
+ "scripts": {
+    "ng": "ng",
+    "start": "ng serve --host 0.0.0.0",
+    "build": "ng build",
+    "build:prod": "node --version",
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e"
+  },
+  
+  type in the terminal
+  docker build -t angular-app(app name) .
+  
+  to run image type
+  docker run -p 4200:4200 --name angular-container angular-app
+  
+  create a docker-compose.yml file
+  type
+  version: '3.5' # specify docker-compose version
+
+#Define the services/containers to be run
+services:
+  angular-services: #name of the first service
+    container_name: angular-container1
+    build: ./ #specify the directory of the docker file
+    volumes: # Volume binding
+     - './:/usr/src/app'
+    ports:
+     - "4201:4200" # specify port forwarding
+    command: >
+     bash -c "npm start"
+	 
+	 go to Dockerfile
+	 comment out CMD ["npm","start"]
+	 
+	 open cmd as administrator
+	 net stop winnat
+     docker start container_name
+     net start winnat
+
+	 type in the terminal
+	 docker-compose up --build
+	 
+
+inside src create ngix/etc
+create a file conf.d inside etc
+create a file default.conf inside ngix
+inside default.conf type
+server{
+    listen 80;
+    server_name localhost;
+    root /usr/share/nginx/html;
+    index index.html index.html;
+    location /api/users{
+        proxy_pass http://localhost:8080/api/users;
+    }
+
+    location / {
+
+        try_files $uri $uri /index.html;
+    }
+
+}
+
+
+	 specify nginx
+	 go to Dockerfile
+	  type
+ #specify ngix image
+#specify ngix image
+FROM nginx:1.15-alpine
+COPY src/nginx/etc/conf.d/default.conf /etc/nginx/conf/default.conf
+COPY --from=builder app/dist/spring-boot-angular usr/share/nginx/html
+
+update the docker-compose.yml file
+docker-nginx:
+      container_name: docker-nginx
+      build: ./
+      ports:
+        - "80:80"
+      command: ["nginx", "-g", "daemon off;"]
+      links:
+        - angular-service
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		docker build -t spring-boot-angular.jar .
+		docker run -p 8080:8080 spring-boot-angular
+		
+		application.properties
+		server.port=8085
+		docker image ls
