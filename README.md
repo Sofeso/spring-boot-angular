@@ -55,7 +55,7 @@ services:
     volumes: # Volume binding
      - './:/usr/src/app'
     ports:
-     - "4200:81" # specify port forwarding
+     - "4200:4200" # specify port forwarding
     command: >
      bash -c "npm start"
   docker-nginx:
